@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Route</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function toggleSeated(station, currentSeated) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'trainroute.php';
+
+            const stationInput = document.createElement('input');
+            stationInput.type = 'hidden';
+            stationInput.name = 'Station';
+            stationInput.value = station;
+
+            const seatedInput = document.createElement('input');
+            seatedInput.type = 'hidden';
+            seatedInput.name = 'Seated';
+            seatedInput.value = !currentSeated;
+
+            form.appendChild(stationInput);
+            form.appendChild(seatedInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+</head>
+<body>
+    <h1>Train Route</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Station</th>
+                <th>Seated</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>" . $row["Station"] . "</td>";
+                    echo "<td>" . ($row["Seated"] ? 'TRUE' : 'FALSE') . "</td>";
+                    echo "<td><button onclick=\"toggleSeated('" . $row["Station"] . "', " . ($row["Seated"] ? 'true' : 'false') . ")\">Toggle</button></td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='3'>No results found</td></tr>";
+            }
+            $conn->close();
+            ?>
+        </tbody>
+    </table>
+</body>
+</html>
